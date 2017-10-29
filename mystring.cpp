@@ -13,35 +13,46 @@ MyString::MyString(char const *str) {
 }
 
 MyString::MyString(MyString const &other) {
-    std::cout << "MyString-copy ctor" << "\n";
+    std::cout << "MyString-copy ctor, refcnt: ";
     sv_ = other.sv_->copied();
+    if(sv_ != nullptr)
+        std::cout << sv_->getRefcnt() << "\n";
 }
 
 MyString::MyString(MyString &&other) {
-    std::cout << "MyString-move ctor" << "\n";
+    std::cout << "MyString-move ctor, refcnt: ";
     std::swap(this->sv_, other.sv_);
     other.sv_ = nullptr;
+    if(sv_ != nullptr)
+        std::cout << sv_->getRefcnt() << "\n";
 }
 
 MyString& MyString::operator=(MyString const &rhs) {
-    std::cout << "MyString-copy assignement operator" << "\n";
+    std::cout << "MyString-copy assignement operator, refcnt: ";
     if(this != &rhs) {
-        delete sv_;
+        if(sv_ != nullptr) {
+            delete sv_;
+        }
         sv_ = rhs.sv_->copied();
     }
     return *this;
 }
 
 MyString& MyString::operator=(MyString &&rhs) {
-    std::cout << "MyString-move assignement operator" << "\n";
+    std::cout << "MyString-move assignement operator, refcnt: ";
     std::swap(this->sv_, rhs.sv_);
     rhs.sv_ = nullptr;
+    if(sv_ != nullptr)
+        std::cout << sv_->getRefcnt() << "\n";
     return *this;
 }
 
 MyString::~MyString() {
-    std::cout << "MyString-dtor" << "\n";
-    delete sv_;
+    std::cout << "MyString-dtor, refcnt: ";
+    if(sv_ != nullptr)
+        std::cout << sv_->getRefcnt() << "\n";
+    if(sv_ != nullptr)
+        delete sv_;
 }
 
 char* MyString::getStringValue() {

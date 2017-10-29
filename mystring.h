@@ -5,13 +5,13 @@ class StringValue {
 private:
     char* data_;
     int refcnt;
-    size_t strlen(char const *);
 public:
     StringValue();
     StringValue(char const *);
     ~StringValue();
     StringValue* copied();
     char* getData();
+    int getRefcnt();
     size_t length();
 };
 

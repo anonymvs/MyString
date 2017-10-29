@@ -2,57 +2,51 @@
 #include <stdio.h>
 #include "mystring.h"
 
-
-/* std::ostream& operator<<(std::ostream &os, MyString &arg) {
-    os << arg.getStringValue();
-    return os;
-} */
+#define TEST 1
 
 int main() {
-    /* std::cout << "-------------separator-------------" << "\n";
-    MyString ms1("mystring");
 
-    std::cout << "-------------separator-------------" << "\n";
+    #if TEST == 1
+    MyString ms1("sample text");
     MyString ms2 = ms1;
-
-    std::cout << "-------------separator-------------" << "\n";
     MyString ms3(ms1);
-
-    std::cout << "-------------separator-------------" << "\n";
     MyString ms4(ms2);
+    MyString ms5;
+    ms5 = ms4;
 
-    std::cout << "-------------separator-------------" << "\n";
-    std::cout << ms1 << "\n" << ms2 << "\n" << ms3 << "\n" << ms4 << "\n"; */
-
-   /*  std::cout << "-------------separator-------------" << "\n";
-    MyString msa{"kerlek"};
-    std::cin >> msa;
-    
-    std::cout << "-------------separator-------------" << "\n";
-    std::cout << msa << "\n"; */
-
-    /* std::cout << "-------------separator-------------" << "\n";
+    std::cout <<"ms1: " << ms1 << "\n" << "ms2: " << ms2 << "\n" << "ms3: "
+         << ms3 << "\n" << "ms4: " << ms4 << "\n" << "ms5: " << ms5 << "\n" << "\n";
+    #endif
+    #if TEST == 2
+    std::cout << "--------------------------" << "\n";
+    MyString inputstr{};
+    std::cin >> inputstr;
+    std::cout << "user's input: " << inputstr << "\n";
+    #endif
+    #if TEST == 3
+    std::cout << "--------------------------" << "\n";
     MyString a{"a"};
     MyString plus{" + "};
     MyString b{"b"};
-
     MyString result;
-
-    std::cout << "-------------separator-------------" << "\n";
-
     result = a + plus + b;
-    //a += "c";
-    std::cout << result << "\n"; */
-
-/*     std::cout << "-------------separator-------------" << "\n";
+    std::cout << result << "\n";
+    result += " + c";  //?
+    std::cout << result << "\n";
+    #endif
+    #if TEST == 4
+    std::cout << "--------------------------" << "\n";
     MyString index_test{"012345"};
     index_test[3] = 'a';
-    std::cout << index_test << "\n";    
-    std::cout << "-------------separator-------------" << "\n"; */
-
-
-    MyString something{"valami"};
-    std::cout << something.length() << "\n";
+    std::cout << index_test << "\n";  
+    #endif
+    #if TEST == 5
+    std::cout << "--------------------------" << "\n"; 
+    MyString something{"length"};
+    std::cout << "the length of the word 'length': " << something.length() << "\n";
+    #endif
+ 
+    std::cout << "--------------------------" << "\n"; 
 
     return 0;
 }

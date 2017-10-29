@@ -4,14 +4,9 @@
 #include "mystring.h"
 
 
-size_t StringValue::strlen(char const *str) {
-    int i = 0;
-    while(str[i] != '\0') {
-        i++;
-    }
-    return i;
+int StringValue::getRefcnt() {
+    return refcnt;
 }
-
 
 StringValue::StringValue() : data_{nullptr}, refcnt{-1} {
     std::cout << "StringValue: def ctor, refcnt: " << refcnt << "\n";
@@ -19,17 +14,20 @@ StringValue::StringValue() : data_{nullptr}, refcnt{-1} {
 
 StringValue::StringValue(char const *str) : refcnt{0} {
     std::cout << "StringValue: def ctor with param, refcnt: " << refcnt << "\n";
+    if(data_ != nullptr) { 
+        delete[] data_;
+    }
     data_ = new char[strlen(str)];
-    for(size_t i = 0; i < strlen(str); i++) {
-        data_[i] = str[i];
-    }    
+    strcpy(data_, str);   
 }
 
 StringValue::~StringValue() {
-    std::cout << "StringValue-dtor: refcnt: " << refcnt << "\n";
+    std::cout << "StringValue-dtor: refcnt: " << refcnt << "\n\n";
     if(refcnt == 0) {
-        delete[] data_;
-        std::cout << "StringValue deleted\n";
+        if(data_ != nullptr) {
+            delete[] data_;
+            std::cout << "StringValue deleted\n";
+        }
         return;
     } 
     refcnt--;
@@ -37,6 +35,7 @@ StringValue::~StringValue() {
 
 StringValue* StringValue::copied() {
     refcnt++;
+    std::cout << "StringValue::copied() -- refcnt: " << refcnt << "\n";
     return this;
 }
 
