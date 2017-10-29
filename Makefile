@@ -1,5 +1,5 @@
 BINARY = mystring
-OBJECTS = mystring.cpp test.cpp
+OBJECTS = mystring.cpp test.cpp stringvalue.cpp
 HEADERS = mystring.h 
 
 CC = gcc

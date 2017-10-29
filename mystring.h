@@ -10,12 +10,9 @@ public:
     StringValue();
     StringValue(char const *);
     ~StringValue();
-    StringValue(StringValue &);
-    StringValue(StringValue &&);
-    StringValue& operator=(StringValue const &);
-    StringValue& operator=(StringValue &&);
+    StringValue* copied();
     char* getData();
-    bool operator!=(StringValue const &) const;
+    size_t length();
 };
 
 
@@ -26,16 +23,20 @@ public:
     MyString();
     MyString(char const *);
     ~MyString();
-    MyString(MyString &);
+    MyString(MyString const &);
     MyString(MyString &&);
     MyString& operator=(MyString const &);
     MyString& operator=(MyString &&);
     char* getStringValue();
-    MyString& operator+(MyString const &) const;
-    MyString& operator+=(MyString const &) const;
-    MyString& operator-(MyString const &) const;
-    MyString& operator+(char const &) const;
-    MyString& operator+=(char const &) const;
-    MyString& operator[](int);
+    void setStringValue(char const *);
+    MyString& operator+(MyString const &);
+    MyString& operator+=(MyString const &);
+    MyString& operator+(char const *);
+    MyString& operator+=(char const *);
+    char& operator[](int);
     size_t length();
+
+    friend std::ostream& operator<<(std::ostream &, MyString &);
+    friend std::istream& operator>>(std::istream &, MyString &);
 };
+

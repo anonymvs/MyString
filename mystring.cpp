@@ -1,76 +1,7 @@
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include "mystring.h"
-
-
-
-size_t StringValue::strlen(char const *str) {
-    int i = 0;
-    while(str[i] != '\0') {
-        i++;
-    }
-    return i;
-}
-
-
-StringValue::StringValue() : data_{nullptr}, refcnt{0} {
-    std::cout << "StringValue: def ctor, refcnt: " << refcnt << "\n";
-}
-
-StringValue::StringValue(char const *str) : refcnt{0} {
-    std::cout << "StringValue: def ctor with param, refcnt: " << refcnt << "\n";
-    data_ = new char[strlen(str)];
-    for(size_t i = 0; i < strlen(str); i++) {
-        data_[i] = str[i];
-    }    
-}
-
-StringValue::~StringValue() {
-    std::cout << "StringValue-dtor: refcnt: " << refcnt << "\n";
-    refcnt--;
-    if(refcnt == 0) {
-        std::cout << "---------signal --------------" << "\n";
-        delete[] data_;
-    }
-}
-
-StringValue::StringValue(StringValue &other) : StringValue{other.data_} {
-    refcnt = other.refcnt;
-    refcnt++;
-    std::cout << "StringValue: copy ctor, refcnt: " << refcnt << "\n";
-}
-
-StringValue::StringValue(StringValue && other) {
-    refcnt++;
-    std::cout << "StringValue: move ctor, refcnt: " << refcnt << "\n";
-}
-
-StringValue& StringValue::operator=(StringValue const &rhs) {
-    if(this != &rhs) {
-        //std::swap(this, *rhs);
-        std::cout << "pre refcnt: " << refcnt;
-        refcnt++;
-        std::cout << " StringValue: copy assingment operator, refcnt: " << refcnt << "\n";
-    }
-    return *this;
-}
-
-StringValue& StringValue::operator=(StringValue && rhs) {
-    delete[] data_;
-    this->data_ = rhs.data_;
-    refcnt++;
-    std::cout << "StringValue: move assingment operator, refcnt: " << refcnt << "\n";
-    return *this;
-}
-
-char* StringValue::getData() {  
-    return data_;
-}
-
-bool StringValue::operator!=(StringValue const &rhs) const{
-    return this->data_ != rhs.data_;
-}
-
 
 MyString::MyString() : sv_{nullptr}{
     std::cout << "MyString-def ctor" << "\n";
@@ -81,33 +12,30 @@ MyString::MyString(char const *str) {
     sv_ = new StringValue{str};
 }
 
-MyString::MyString(MyString &other) {
+MyString::MyString(MyString const &other) {
     std::cout << "MyString-copy ctor" << "\n";
-    //std::cout << other.sv_->getData() << "\n";
-    if(sv_ != other.sv_)
-        delete sv_;
-    sv_ = new StringValue{*other.sv_};
+    sv_ = other.sv_->copied();
 }
 
 MyString::MyString(MyString &&other) {
     std::cout << "MyString-move ctor" << "\n";
-    sv_ = new StringValue{};
-    sv_->operator=(*other.sv_);
+    std::swap(this->sv_, other.sv_);
+    other.sv_ = nullptr;
 }
 
 MyString& MyString::operator=(MyString const &rhs) {
     std::cout << "MyString-copy assignement operator" << "\n";
     if(this != &rhs) {
         delete sv_;
-        sv_ = new StringValue{};
-        sv_->operator=(*rhs.sv_);
+        sv_ = rhs.sv_->copied();
     }
     return *this;
 }
 
 MyString& MyString::operator=(MyString &&rhs) {
     std::cout << "MyString-move assignement operator" << "\n";
-    std::swap(sv_, rhs.sv_);
+    std::swap(this->sv_, rhs.sv_);
+    rhs.sv_ = nullptr;
     return *this;
 }
 
@@ -117,30 +45,71 @@ MyString::~MyString() {
 }
 
 char* MyString::getStringValue() {
-    //std::cout << "MyString->StringValue->getData(): " << sv_->getData() << "\n";
     return sv_->getData();
 }
 
-MyString& MyString::operator+(MyString const &rhs) const {
-
+void MyString::setStringValue(char const *arg) {
+    if(sv_ != nullptr)
+        delete sv_;
+    sv_ = new StringValue{arg};
 }
 
-MyString& MyString::operator+=(MyString const & rhs) const {
-    //TODO
+MyString& MyString::operator+(MyString const &rhs) {
+    char* str = strcat(sv_->getData(), rhs.sv_->getData());
+    delete sv_;
+    sv_ = new StringValue{str};
+    return *this;
 }
 
-MyString& MyString::operator+(char const &rhs) const {
-    //TODO
+MyString& MyString::operator+=(MyString const & rhs) {
+    //std::cout << "+= operator: " << sv_->getData() << rhs.sv_->getData();
+    char* str = strcat(sv_->getData(), rhs.sv_->getData());
+    StringValue* tmp = new StringValue{str};
+    if(sv_ != nullptr) {
+        delete sv_;
+    }
+    sv_ = tmp;
+    return *this;
+}
+
+MyString& MyString::operator+(char const *rhs) {
+    //std::cout << "+= operator: " << sv_->getData() << rhs.sv_->getData();
+    char* str = strcat(sv_->getData(), rhs.sv_->getData());
+    StringValue* tmp = new StringValue{str};
+    if(sv_ != nullptr) {
+        delete sv_;
+    }
+    sv_ = tmp;
+    return *this;
 }
     
-MyString& MyString::operator+=(char const & rhs) const {
-    //TODO
+MyString& MyString::operator+=(char const *rhs) {
+    //std::cout << "+= operator: " << sv_->getData() << rhs.sv_->getData();
+    char* str = strcat(sv_->getData(), rhs.sv_->getData());
+    StringValue* tmp = new StringValue{str};
+    if(sv_ != nullptr) {
+        delete sv_;
+    }
+    sv_ = tmp;
+    return *this;
 }
 
-MyString& MyString::operator[](int i) {
-    //TODO
+char& MyString::operator[](int i) {
+    return sv_->getData()[i];
 }
 
 size_t MyString::length() {
-    //TODO
+    return sv_->length();
 }
+
+std::ostream& operator<<(std::ostream &os, MyString &arg) {
+    os << arg.getStringValue();
+    return os;
+}
+std::istream& operator>>(std::istream &is, MyString &arg) {
+    char s[1000];
+    is >> s;
+    arg.setStringValue(s);
+    return is;
+}
+
