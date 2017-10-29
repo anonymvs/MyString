@@ -31,21 +31,28 @@ int main() {
     std::cout << "-------------separator-------------" << "\n";
     std::cout << msa << "\n"; */
 
-    std::cout << "-------------separator-------------" << "\n";
+    /* std::cout << "-------------separator-------------" << "\n";
     MyString a{"a"};
     MyString plus{" + "};
     MyString b{"b"};
 
     MyString result;
-    a += b;
-    std::cout << a << "\n";
 
     std::cout << "-------------separator-------------" << "\n";
 
+    result = a + plus + b;
+    //a += "c";
+    std::cout << result << "\n"; */
+
+/*     std::cout << "-------------separator-------------" << "\n";
+    MyString index_test{"012345"};
+    index_test[3] = 'a';
+    std::cout << index_test << "\n";    
+    std::cout << "-------------separator-------------" << "\n"; */
 
 
-    
-    
+    MyString something{"valami"};
+    std::cout << something.length() << "\n";
 
     return 0;
 }

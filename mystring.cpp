@@ -45,6 +45,10 @@ MyString::~MyString() {
 }
 
 char* MyString::getStringValue() {
+    if(sv_ == nullptr) {
+        std::cout << "StringValue not yet initialized\n";
+        return nullptr;
+    }
     return sv_->getData();
 }
 
@@ -56,8 +60,11 @@ void MyString::setStringValue(char const *arg) {
 
 MyString& MyString::operator+(MyString const &rhs) {
     char* str = strcat(sv_->getData(), rhs.sv_->getData());
-    delete sv_;
-    sv_ = new StringValue{str};
+    StringValue* tmp = new StringValue{str};
+    if(sv_ != nullptr) {
+        delete sv_;
+    }
+    sv_ = tmp;
     return *this;
 }
 
@@ -74,7 +81,7 @@ MyString& MyString::operator+=(MyString const & rhs) {
 
 MyString& MyString::operator+(char const *rhs) {
     //std::cout << "+= operator: " << sv_->getData() << rhs.sv_->getData();
-    char* str = strcat(sv_->getData(), rhs.sv_->getData());
+    char* str = strcat(sv_->getData(), rhs);
     StringValue* tmp = new StringValue{str};
     if(sv_ != nullptr) {
         delete sv_;
@@ -84,8 +91,8 @@ MyString& MyString::operator+(char const *rhs) {
 }
     
 MyString& MyString::operator+=(char const *rhs) {
-    //std::cout << "+= operator: " << sv_->getData() << rhs.sv_->getData();
-    char* str = strcat(sv_->getData(), rhs.sv_->getData());
+    //std::cout << "+= operator: " << sv_->getData() << rhs << "\n";
+    char* str = strcat(sv_->getData(), rhs);
     StringValue* tmp = new StringValue{str};
     if(sv_ != nullptr) {
         delete sv_;
@@ -103,7 +110,8 @@ size_t MyString::length() {
 }
 
 std::ostream& operator<<(std::ostream &os, MyString &arg) {
-    os << arg.getStringValue();
+    if(arg.getStringValue() != nullptr)
+        os << arg.getStringValue();
     return os;
 }
 std::istream& operator>>(std::istream &is, MyString &arg) {

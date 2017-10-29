@@ -29,6 +29,8 @@ StringValue::~StringValue() {
     std::cout << "StringValue-dtor: refcnt: " << refcnt << "\n";
     if(refcnt == 0) {
         delete[] data_;
+        std::cout << "StringValue deleted\n";
+        return;
     } 
     refcnt--;
 }
