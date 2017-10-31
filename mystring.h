@@ -12,6 +12,7 @@ public:
     StringValue* copied();
     char* getData();
     int getRefcnt();
+    void deincRefcnt();
     size_t length();
 };
 
@@ -22,6 +23,7 @@ private:
 public:
     MyString();
     MyString(char const *);
+    MyString(StringValue &&sv);
     ~MyString();
     MyString(MyString const &);
     MyString(MyString &&);
@@ -29,14 +31,17 @@ public:
     MyString& operator=(MyString &&);
     char* getStringValue();
     void setStringValue(char const *);
-    MyString& operator+(MyString const &);
     MyString& operator+=(MyString const &);
     MyString& operator+(char const *);
     MyString& operator+=(char const *);
     char& operator[](int);
     size_t length();
+    bool isEmpty();
 
     friend std::ostream& operator<<(std::ostream &, MyString &);
     friend std::istream& operator>>(std::istream &, MyString &);
 };
+
+MyString&& operator+(MyString &, MyString &);
+MyString&& operator+(MyString &&, MyString &);
 

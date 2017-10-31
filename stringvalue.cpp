@@ -8,24 +8,21 @@ int StringValue::getRefcnt() {
     return refcnt;
 }
 
+void StringValue::deincRefcnt() {
+    refcnt--;
+}
+
 StringValue::StringValue() : data_{nullptr}, refcnt{-1} {}
 
 StringValue::StringValue(char const *str) : refcnt{0} {
-    if(data_ != nullptr) { 
-        delete[] data_;
-    }
-    data_ = new char[strlen(str)];
+    data_ = new char[strlen(str) + 1];
     strcpy(data_, str);   
 }
 
 StringValue::~StringValue() {
-    if(refcnt == 0) {
-        if(data_ != nullptr) {
-            delete[] data_;
-        }
-        return;
-    } 
-    refcnt--;
+    if(data_ != nullptr) {
+        delete[] data_;
+    }
 }
 
 StringValue* StringValue::copied() {

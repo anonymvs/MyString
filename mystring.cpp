@@ -16,6 +16,7 @@ MyString::MyString(MyString const &other) {
 MyString::MyString(MyString &&other) {
     std::swap(this->sv_, other.sv_);
     other.sv_ = nullptr;
+    delete &other;
 }
 
 MyString& MyString::operator=(MyString const &rhs) {
@@ -29,14 +30,21 @@ MyString& MyString::operator=(MyString const &rhs) {
 }
 
 MyString& MyString::operator=(MyString &&rhs) {
+    if(sv_ != nullptr) 
+        delete sv_;
     std::swap(this->sv_, rhs.sv_);
-    rhs.sv_ = nullptr;
+    delete &rhs;
     return *this;
 }
 
 MyString::~MyString() {
-    if(sv_ != nullptr)
-        delete sv_;
+    if(sv_ != nullptr) {
+        if(sv_->getRefcnt() == 0) {   
+            delete sv_;
+        } else {
+            sv_->deincRefcnt();
+        }
+    }
 }
 
 char* MyString::getStringValue() {
@@ -52,43 +60,81 @@ void MyString::setStringValue(char const *arg) {
     sv_ = new StringValue{arg};
 }
 
-MyString& MyString::operator+(MyString const &rhs) {
-    char* str = strcat(sv_->getData(), rhs.sv_->getData());
-    StringValue* tmp = new StringValue{str};
-    if(sv_ != nullptr) {
+MyString& MyString::operator+=(MyString const & rhs) {
+    if(rhs.sv_ == nullptr) 
+        return *this;
+
+    char *str;
+
+    if(this->sv_ != nullptr) {
+        str = new char[strlen(sv_->getData()) + strlen(rhs.sv_->getData()) + 1];
+        strcpy(str, sv_->getData());
         delete sv_;
+    } else {
+        str = new char[strlen(rhs.sv_->getData()) + 1];
     }
-    sv_ = tmp;
+    strcat(str, rhs.sv_->getData());
+    StringValue *ret = new StringValue{str};
+    sv_ = ret;
     return *this;
 }
 
-MyString& MyString::operator+=(MyString const & rhs) {
-    char* str = strcat(sv_->getData(), rhs.sv_->getData());
-    StringValue* tmp = new StringValue{str};
-    if(sv_ != nullptr) {
-        delete sv_;
+MyString&& operator+(MyString &lhs, MyString &rhs) {
+    char *str;
+    if(!lhs.isEmpty() && !rhs.isEmpty()) {
+        str = new char[strlen(lhs.getStringValue()) + strlen(rhs.getStringValue()) + 1];
+        strcpy(str, lhs.getStringValue());
+        strcat(str, rhs.getStringValue());
+        MyString *ret = new MyString{std::move(str)};
+        delete[] str;
+        return std::move(*ret);
+    } else {
+        if(lhs.isEmpty()) {
+            return std::move(rhs);
+        } else {
+            return std::move(lhs);
+        }
+    } 
+}
+
+
+MyString&& operator+(MyString &&lhs, MyString &rhs) {
+    char *str;
+    if(!lhs.isEmpty() && !rhs.isEmpty()) {
+        str = new char[strlen(lhs.getStringValue()) + strlen(rhs.getStringValue()) + 1];
+        strcpy(str, lhs.getStringValue());
+        strcat(str, rhs.getStringValue());
+        MyString *ret = new MyString{std::move(str)};
+        delete[] str;
+        delete &lhs;
+        return std::move(*ret);
+    } else {
+        if(lhs.isEmpty()) {
+            return std::move(rhs);
+        } else {
+            return std::move(lhs);
+        }
     }
-    sv_ = tmp;
+}
+
+MyString& MyString::operator+=(char const *rhs) {
+    char *str = nullptr;
+    if(this->sv_ != nullptr) {
+        str = new char[strlen(sv_->getData()) + strlen(rhs) + 1];
+        strcpy(str, sv_->getData());
+        delete sv_;
+    } else {
+        str = new char[strlen(rhs) + 1];
+    }
+    strcat(str, rhs);
+    StringValue *ret = new StringValue{str};
+    sv_ = ret;
+    delete[] str;
     return *this;
 }
 
 MyString& MyString::operator+(char const *rhs) {
-    char* str = strcat(sv_->getData(), rhs);
-    StringValue* tmp = new StringValue{str};
-    if(sv_ != nullptr) {
-        delete sv_;
-    }
-    sv_ = tmp;
-    return *this;
-}
-    
-MyString& MyString::operator+=(char const *rhs) {
-    char* str = strcat(sv_->getData(), rhs);
-    StringValue* tmp = new StringValue{str};
-    if(sv_ != nullptr) {
-        delete sv_;
-    }
-    sv_ = tmp;
+    *this += rhs;
     return *this;
 }
 
@@ -100,15 +146,25 @@ size_t MyString::length() {
     return sv_->length();
 }
 
+bool MyString::isEmpty() {
+    if(sv_ == nullptr)
+        return true;
+    return false;
+}
+
 std::ostream& operator<<(std::ostream &os, MyString &arg) {
-    if(arg.getStringValue() != nullptr)
-        os << arg.getStringValue();
+    os << arg.getStringValue();
     return os;
 }
 std::istream& operator>>(std::istream &is, MyString &arg) {
-    char s[1000];
-    is >> s;
-    arg.setStringValue(s);
+    char c = '\n';
+    bool b = true;
+    while(b) {
+        is.get(c);
+        if(c == '\n') 
+            break;
+        arg += &c;
+    }
     return is;
 }
 

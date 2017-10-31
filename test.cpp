@@ -3,7 +3,7 @@
 #include "mystring.h"
 
 //tests from 1 to 5
-#define TEST 1
+#define TEST 2
 
 int main() {
 
@@ -32,9 +32,13 @@ int main() {
     MyString b{"b"};
     MyString result;
     result = a + plus + b;
+    std::cout << result << "\n"; 
+    result += " + c"; 
     std::cout << result << "\n";
-    result += " + c";  //?
-    std::cout << result << "\n";
+    result = result + " = result"; 
+    std::cout << result << "\n";  
+    MyString memleak{a + b};
+    std::cout << "'a' + 'b' = " << memleak << "\n";
     #endif
 
     #if TEST == 4
