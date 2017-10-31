@@ -8,12 +8,9 @@ int StringValue::getRefcnt() {
     return refcnt;
 }
 
-StringValue::StringValue() : data_{nullptr}, refcnt{-1} {
-    std::cout << "StringValue: def ctor, refcnt: " << refcnt << "\n";
-}
+StringValue::StringValue() : data_{nullptr}, refcnt{-1} {}
 
 StringValue::StringValue(char const *str) : refcnt{0} {
-    std::cout << "StringValue: def ctor with param, refcnt: " << refcnt << "\n";
     if(data_ != nullptr) { 
         delete[] data_;
     }
@@ -22,11 +19,9 @@ StringValue::StringValue(char const *str) : refcnt{0} {
 }
 
 StringValue::~StringValue() {
-    std::cout << "StringValue-dtor: refcnt: " << refcnt << "\n\n";
     if(refcnt == 0) {
         if(data_ != nullptr) {
             delete[] data_;
-            std::cout << "StringValue deleted\n";
         }
         return;
     } 
@@ -35,7 +30,6 @@ StringValue::~StringValue() {
 
 StringValue* StringValue::copied() {
     refcnt++;
-    std::cout << "StringValue::copied() -- refcnt: " << refcnt << "\n";
     return this;
 }
 

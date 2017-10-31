@@ -3,32 +3,22 @@
 #include <cstring>
 #include "mystring.h"
 
-MyString::MyString() : sv_{nullptr}{
-    std::cout << "MyString-def ctor" << "\n";
-}
+MyString::MyString() : sv_{nullptr}{}
 
 MyString::MyString(char const *str) {
-    std::cout << "MyString-ctor with param" << "\n";
     sv_ = new StringValue{str};
 }
 
 MyString::MyString(MyString const &other) {
-    std::cout << "MyString-copy ctor, refcnt: ";
     sv_ = other.sv_->copied();
-    if(sv_ != nullptr)
-        std::cout << sv_->getRefcnt() << "\n";
 }
 
 MyString::MyString(MyString &&other) {
-    std::cout << "MyString-move ctor, refcnt: ";
     std::swap(this->sv_, other.sv_);
     other.sv_ = nullptr;
-    if(sv_ != nullptr)
-        std::cout << sv_->getRefcnt() << "\n";
 }
 
 MyString& MyString::operator=(MyString const &rhs) {
-    std::cout << "MyString-copy assignement operator, refcnt: ";
     if(this != &rhs) {
         if(sv_ != nullptr) {
             delete sv_;
@@ -39,25 +29,18 @@ MyString& MyString::operator=(MyString const &rhs) {
 }
 
 MyString& MyString::operator=(MyString &&rhs) {
-    std::cout << "MyString-move assignement operator, refcnt: ";
     std::swap(this->sv_, rhs.sv_);
     rhs.sv_ = nullptr;
-    if(sv_ != nullptr)
-        std::cout << sv_->getRefcnt() << "\n";
     return *this;
 }
 
 MyString::~MyString() {
-    std::cout << "MyString-dtor, refcnt: ";
-    if(sv_ != nullptr)
-        std::cout << sv_->getRefcnt() << "\n";
     if(sv_ != nullptr)
         delete sv_;
 }
 
 char* MyString::getStringValue() {
     if(sv_ == nullptr) {
-        std::cout << "StringValue not yet initialized\n";
         return nullptr;
     }
     return sv_->getData();
@@ -80,7 +63,6 @@ MyString& MyString::operator+(MyString const &rhs) {
 }
 
 MyString& MyString::operator+=(MyString const & rhs) {
-    //std::cout << "+= operator: " << sv_->getData() << rhs.sv_->getData();
     char* str = strcat(sv_->getData(), rhs.sv_->getData());
     StringValue* tmp = new StringValue{str};
     if(sv_ != nullptr) {
@@ -91,7 +73,6 @@ MyString& MyString::operator+=(MyString const & rhs) {
 }
 
 MyString& MyString::operator+(char const *rhs) {
-    //std::cout << "+= operator: " << sv_->getData() << rhs.sv_->getData();
     char* str = strcat(sv_->getData(), rhs);
     StringValue* tmp = new StringValue{str};
     if(sv_ != nullptr) {
@@ -102,7 +83,6 @@ MyString& MyString::operator+(char const *rhs) {
 }
     
 MyString& MyString::operator+=(char const *rhs) {
-    //std::cout << "+= operator: " << sv_->getData() << rhs << "\n";
     char* str = strcat(sv_->getData(), rhs);
     StringValue* tmp = new StringValue{str};
     if(sv_ != nullptr) {

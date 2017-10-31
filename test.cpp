@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "mystring.h"
 
+//tests from 1 to 5
 #define TEST 1
 
 int main() {
@@ -13,16 +14,17 @@ int main() {
     MyString ms4(ms2);
     MyString ms5;
     ms5 = ms4;
-
     std::cout <<"ms1: " << ms1 << "\n" << "ms2: " << ms2 << "\n" << "ms3: "
          << ms3 << "\n" << "ms4: " << ms4 << "\n" << "ms5: " << ms5 << "\n" << "\n";
     #endif
+
     #if TEST == 2
     std::cout << "--------------------------" << "\n";
     MyString inputstr{};
     std::cin >> inputstr;
     std::cout << "user's input: " << inputstr << "\n";
     #endif
+
     #if TEST == 3
     std::cout << "--------------------------" << "\n";
     MyString a{"a"};
@@ -34,12 +36,14 @@ int main() {
     result += " + c";  //?
     std::cout << result << "\n";
     #endif
+
     #if TEST == 4
     std::cout << "--------------------------" << "\n";
     MyString index_test{"012345"};
     index_test[3] = 'a';
     std::cout << index_test << "\n";  
     #endif
+
     #if TEST == 5
     std::cout << "--------------------------" << "\n"; 
     MyString something{"length"};
